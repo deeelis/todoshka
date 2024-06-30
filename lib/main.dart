@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:todoshka/themes/dark_theme.dart';
 import 'package:todoshka/themes/light_theme.dart';
-import 'package:todoshka/ui/providers/localization_provider.dart';
 import 'package:todoshka/ui/screens/home_page.dart';
 import 'package:todoshka/utils/logger.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
