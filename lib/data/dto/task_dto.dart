@@ -7,9 +7,13 @@ class TaskDto {
   String id;
   String text;
   String importance;
-  @JsonKey(fromJson: _boolFromString,)
+  @JsonKey(
+    fromJson: _boolFromString,
+  )
   bool done;
-  @JsonKey(fromJson: _intFromNullable,)
+  @JsonKey(
+    fromJson: _intFromNullable,
+  )
   int? deadline;
   String color;
   @JsonKey(name: "created_at")
@@ -42,16 +46,16 @@ class TaskDto {
   }
 
   TaskDto(
-      this.id,
-      this.text,
-      this.importance,
-      this.done,
-      this.deadline,
-      this.color,
-      this.createdAt,
-      this.changedAt,
-      this.lastUpdatedBy,
-      );
+    this.id,
+    this.text,
+    this.importance,
+    this.done,
+    this.deadline,
+    this.color,
+    this.createdAt,
+    this.changedAt,
+    this.lastUpdatedBy,
+  );
 
   factory TaskDto.fromJson(Map<String, dynamic> json) =>
       _$TaskDtoFromJson(json);

@@ -1,16 +1,16 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'api_result_dto.dart';
+part of 'element_dto.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-ApiResultDto _$ApiResultDtoFromJson(Map<String, dynamic> json) => ApiResultDto(
+ElementDto _$ElementDtoFromJson(Map<String, dynamic> json) => ElementDto(
       TaskDto.fromJson(json['element'] as Map<String, dynamic>),
     );
 
-Map<String, dynamic> _$ApiResultDtoToJson(ApiResultDto instance) =>
+Map<String, dynamic> _$ElementDtoToJson(ElementDto instance) =>
     <String, dynamic>{
       'element': instance.element.toJson(),
     };

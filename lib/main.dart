@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:requests_inspector/requests_inspector.dart';
 import 'package:todoshka/themes/dark_theme.dart';
 import 'package:todoshka/themes/light_theme.dart';
 import 'package:todoshka/ui/providers/localization_provider.dart';
@@ -16,8 +17,12 @@ void main() {
   }
   AppLogger.info("App started");
   runApp(
-    const ProviderScope(
-      child: ToDoApp(),
+    const RequestsInspector(
+      enabled: true,
+      showInspectorOn: ShowInspectorOn.LongPress,
+      child: ProviderScope(
+        child: ToDoApp(),
+      ),
     ),
   );
 }

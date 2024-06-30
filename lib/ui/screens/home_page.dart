@@ -7,7 +7,8 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../domain/models/task.dart';
 import '../providers/task_provider.dart';
-import '../widgets/home_page/task_list.dart';
+import '../widgets/home_page/new_task_card.dart';
+import '../widgets/home_page/task_card.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({
@@ -21,16 +22,11 @@ class HomePage extends ConsumerStatefulWidget {
 class HomePageState extends ConsumerState<HomePage> {
   static const collapsedBarHeight = 60.0;
   static const expandedBarHeight = 400.0;
+  final scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
-  }
-
-
-  int countDone(List<Task> list) {
-    int count = list.where((item) => item.isDone).length;
-    return count;
   }
 
   bool isVisible = false;
@@ -40,43 +36,55 @@ class HomePageState extends ConsumerState<HomePage> {
     List<Task> items = ref.watch(taskStateProvider).valueOrNull ?? [];
     return Scaffold(
       body: CustomScrollView(
+        controller: scrollController,
         physics: const BouncingScrollPhysics(),
         slivers: [
           SliverPersistentHeader(
             floating: true,
             pinned: true,
             delegate: _AppHeader(
-                completedTaskCount: countDone(items),
-                isVisible: isVisible ? true : false,
-                onChangeVisibility: () {
-                  setState(() {
-                    isVisible = !isVisible;
-                  });
-                }),
+              completedTaskCount:
+                  ref.read(taskStateProvider.notifier).countDoneTasks(),
+              isVisible: isVisible ? true : false,
+              onChangeVisibility: () {
+                setState(() {
+                  isVisible = !isVisible;
+                });
+              },
+            ),
           ),
           SliverToBoxAdapter(
-            child: Column(
-              children: [
-                TaskList(
-                  key: const Key('taskList'),
-                  tasks: items,
-                  isVisible: isVisible,
-                  add: (task) {
-                    setState(() {
-                      ref.read(taskStateProvider.notifier).addOrEditTask(task);
-                    });
-                  },
-                  delete: (task) {
-                    setState(() {
-                      ref.read(taskStateProvider.notifier).deleteTask(task);
-                    });
-                  },
-
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-              ],
+            child: Card(
+              color: Theme.of(context).cardColor,
+              elevation: 2,
+              margin: const EdgeInsets.only(right: 16, left: 16),
+              child: Column(
+                children: [
+                  const SizedBox(
+                    height: 8,
+                  ),
+                  ListView.builder(
+                    itemCount: items.length,
+                    controller: scrollController,
+                    shrinkWrap: true,
+                    itemBuilder: (BuildContext context, int index) {
+                      if ((isVisible && items[index].isDone)) {
+                        return const SizedBox();
+                      }
+                      return TaskCard(
+                        task: items[index],
+                        isVisible: isVisible,
+                      );
+                    },
+                  ),
+                  SingleChildScrollView(
+                    child: NewTaskCard(),
+                  ),
+                  const SizedBox(
+                    height: 8,
+                  ),
+                ],
+              ),
             ),
           ),
         ],
@@ -88,17 +96,7 @@ class HomePageState extends ConsumerState<HomePage> {
             context,
             MaterialPageRoute(
               builder: (context) => TaskDetailsPage(
-                task: null,
-                onSave: (task) {
-                  setState(() {
-                    ref.read(taskStateProvider.notifier).addOrEditTask(task);
-                  });
-                },
-                onDelete: (task) {
-                  setState(() {
-                    ref.read(taskStateProvider.notifier).deleteTask(task);
-                  });
-                },
+                task: getEmpty(),
               ),
             ),
           );
@@ -137,10 +135,7 @@ class _AppHeader extends SliverPersistentHeaderDelegate {
     final offset = min(shrinkOffset, maxExtent - minExtent);
     final progress = offset / (maxExtent - minExtent);
 
-
     return Material(
-
-      color: Colors.transparent,
       elevation: progress < 1 ? expandedElevation : collapsedElevation,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 100),
@@ -193,7 +188,7 @@ class _AppHeader extends SliverPersistentHeaderDelegate {
                           ),
                         ),
                       ),
-                    )
+                    ),
                   ],
                 ),
               ),

@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:todoshka/data/dto/tasks_dto.dart';
-import 'package:todoshka/data/dto/api_result_dto.dart';
+import 'package:todoshka/data/dto/element_dto.dart';
 
 import '../../utils/constants.dart';
 import '../../utils/logger.dart';
@@ -14,33 +14,31 @@ class TasksRuntimeDao implements TasksDao {
   TasksRuntimeDao();
 
   @override
-  Future<void> addTask(TaskDto actionDto) async {
+  Future<void> addTask(TaskDto taskDto) async {
     final url = Uri.parse(Constants.baseUrlList);
     int revision = await Constants.getRevision();
-    AppLogger.debug("Revision add $revision");
-    ApiResultDto apiResultDto = ApiResultDto(actionDto);
+    ElementDto elementDto = ElementDto(taskDto);
     final response = await http.post(
       url,
       headers: {
-        Constants.headerRevision: revision.toString(),
         HttpHeaders.authorizationHeader: "Bearer ${Constants.token}",
+        Constants.headerRevision: revision.toString(),
       },
-      body: json.encode(apiResultDto.toJson()),
+      body: json.encode(elementDto.toJson()),
     );
     if (response.statusCode != 200) {
-      AppLogger.debug(response.statusCode.toString());
       if (response.statusCode == 400) {
-        throw FormatException('NotValidRevision: $revision');
+        throw FormatException("NotValidRevision: $revision");
       }
     }
     Constants.setRevision(jsonDecode(response.body)["revision"]);
   }
 
   @override
-  Future<void> deleteTask(TaskDto actionDto) async {
-    final url = Uri.parse('${Constants.baseUrlList}/${actionDto.id}');
+  Future<void> deleteTask(TaskDto taskDto) async {
+    final url = Uri.parse('${Constants.baseUrlList}/${taskDto.id}');
     int revision = await Constants.getRevision();
-    AppLogger.debug("Revision delete $revision");
+
     final response = await http.delete(
       url,
       headers: {
@@ -58,18 +56,17 @@ class TasksRuntimeDao implements TasksDao {
   }
 
   @override
-  Future<void> editTask(TaskDto actionDto) async {
-    final url = Uri.parse('${Constants.baseUrlList}/${actionDto.id}');
+  Future<void> editTask(TaskDto taskDto) async {
+    final url = Uri.parse('${Constants.baseUrlList}/${taskDto.id}');
     int revision = await Constants.getRevision();
-    AppLogger.debug("Revision edit $revision");
-    ApiResultDto apiResultDto = ApiResultDto(actionDto);
+    ElementDto elementDto = ElementDto(taskDto);
     final response = await http.put(
       url,
       headers: {
         Constants.headerRevision: revision.toString(),
         HttpHeaders.authorizationHeader: "Bearer ${Constants.token}",
       },
-      body: json.encode(apiResultDto.toJson()),
+      body: json.encode(elementDto.toJson()),
     );
     if (response.statusCode != 200) {
       AppLogger.debug(response.statusCode.toString());
@@ -83,8 +80,6 @@ class TasksRuntimeDao implements TasksDao {
   @override
   Future<List<TaskDto>> getList() async {
     final url = Uri.parse(Constants.baseUrlList);
-    int revision = await getRevision();
-    AppLogger.debug("Revision get $revision");
     final response = await http.get(
       url,
       headers: {
@@ -96,7 +91,6 @@ class TasksRuntimeDao implements TasksDao {
     }
     TasksDto tasks = TasksDto.fromJson(jsonDecode(response.body));
     Constants.setRevision(tasks.revision);
-    AppLogger.debug(Constants.getRevision() as String);
     return tasks.list;
   }
 
@@ -105,10 +99,11 @@ class TasksRuntimeDao implements TasksDao {
     final url = Uri.parse(Constants.baseUrlList);
     int revision = await Constants.getRevision();
     AppLogger.debug("Revision update $revision");
+    String r = revision.toString();
     final response = await http.patch(
       url,
       headers: {
-        Constants.headerRevision: revision.toString(),
+        Constants.headerRevision: r,
         HttpHeaders.authorizationHeader: "Bearer ${Constants.token}",
       },
       body: '{"list":${json.encode(list.map((e) => e.toJson()).toList())}}',
@@ -123,7 +118,6 @@ class TasksRuntimeDao implements TasksDao {
     Constants.setRevision(tasks.revision);
     return tasks.list;
   }
-
 
   Future<int> getRevision() async {
     final url = Uri.parse(Constants.baseUrlList);

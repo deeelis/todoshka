@@ -8,6 +8,7 @@ class TaskTextField extends StatelessWidget {
   late final TextEditingController controller = TextEditingController()
     ..text = text ?? '';
   final Function(String) onChanged;
+
   @override
   Widget build(BuildContext context) {
     return DecoratedBox(

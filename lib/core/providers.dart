@@ -12,18 +12,18 @@ import '../domain/repository/tasks_repository.dart';
 final uuidProvider = Provider((ref) => const Uuid());
 
 final taskMapperProvider = Provider<TaskMapper>(
-      (ref) => TaskMapper(),
+  (ref) => TaskMapper(),
 );
 
 final taskDaoProvider = Provider<TaskDao>(
-      (ref) => TaskRuntimeDao(),
+  (ref) => TaskRuntimeDao(),
 );
 final tasksDaoProvider = Provider<TasksDao>(
-      (ref) => TasksRuntimeDao(),
+  (ref) => TasksRuntimeDao(),
 );
 
 final taskRepositoryProvider = Provider<TasksRepository>(
-      (ref) => TasksRuntimeRepository(
+  (ref) => TasksRuntimeRepository(
     ref.read(uuidProvider),
     ref.read(taskDaoProvider),
     ref.read(tasksDaoProvider),

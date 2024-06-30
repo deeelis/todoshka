@@ -17,11 +17,11 @@ class TasksRuntimeRepository implements TasksRepository {
   final TaskMapper taskMapper;
 
   TasksRuntimeRepository(
-      this.uuid,
-      this.taskDao,
-      this.listDao,
-      this.taskMapper,
-      );
+    this.uuid,
+    this.taskDao,
+    this.listDao,
+    this.taskMapper,
+  );
 
   Future<String?> getId() async {
     var deviceInfo = DeviceInfoPlugin();
@@ -96,9 +96,7 @@ class TasksRuntimeRepository implements TasksRepository {
       List<TaskDto> listFromServer = await listDao.getList();
       listDb.addAll(listFromServer);
       listFromServer = await listDao.updateTasks(listDb.toSet().toList());
-      return listFromServer
-          .map((e) => taskMapper.mapTaskDtoToTask(e))
-          .toList();
+      return listFromServer.map((e) => taskMapper.mapTaskDtoToTask(e)).toList();
     } on Exception catch (e) {
       AppLogger.error(e.toString());
     }
