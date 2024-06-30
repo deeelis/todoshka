@@ -13,11 +13,10 @@ class NewTaskCard extends StatelessWidget {
   void onEditingComplete() {
     focusNode.unfocus();
     if (controller.text.isNotEmpty) {
-      Task task = Task.create(
-        text: controller.text,
-        importance: Importance.basic,
-        isDone: false,
-      );
+      Task task = getEmpty();
+      task.text = controller.text;
+      task.importance = Importance.basic;
+      task.isDone = false;
       onAdd(task);
     }
   }

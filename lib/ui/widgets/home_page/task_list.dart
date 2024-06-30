@@ -6,8 +6,10 @@ import '../../../domain/models/task.dart';
 import 'new_task_card.dart';
 
 class TaskList extends StatefulWidget {
-  const TaskList({required this.tasks, super.key, required this.isVisible});
+  const TaskList({required this.tasks, super.key, required this.isVisible, required this.add, required this.delete});
 
+  final void Function(Task) add;
+  final void Function(Task)? delete;
   final List<Task> tasks;
   final bool isVisible;
 
@@ -41,13 +43,13 @@ class _TaskListState extends State<TaskList> {
               task: widget.tasks[index],
               onDelete: (task) {
                 setState(() {
-                  widget.tasks.remove(widget.tasks[index]);
+                  widget.delete!(task);
                   AppLogger.debug(task.id);
                 });
               },
               onEdit: (task) {
                 setState(() {
-                  widget.tasks[index] = task;
+                  widget.add(task);
                   AppLogger.debug(task.id);
                 });
               },
@@ -56,7 +58,7 @@ class _TaskListState extends State<TaskList> {
           NewTaskCard(
             onAdd: (task) {
               setState(() {
-                widget.tasks.add(task);
+                widget.add(task);
               });
             },
           ),

@@ -24,7 +24,7 @@ class TaskDetailsPage extends StatefulWidget {
 
 class _TaskDetailsPageState extends State<TaskDetailsPage> {
   late Task task =
-      widget.task != null ? widget.task!.copyWith() : Task.create();
+      widget.task ?? getEmpty();
 
   @override
   Widget build(BuildContext context) {
