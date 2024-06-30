@@ -40,7 +40,6 @@ class ToDoApp extends ConsumerWidget {
         Locale('en'), // English
         Locale('ru'), // Russian
       ],
-      locale: Locale(ref.watch(localizationProvider)),
       theme: lightTheme(),
       darkTheme: darkTheme(),
       themeMode: ThemeMode.light,
