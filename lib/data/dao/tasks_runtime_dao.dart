@@ -27,9 +27,12 @@ class TasksRuntimeDao implements TasksDao {
       body: json.encode(elementDto.toJson()),
     );
     if (response.statusCode != 200) {
+      AppLogger.debug(response.statusCode.toString());
       if (response.statusCode == 400) {
         throw FormatException("NotValidRevision: $revision");
       }
+    } else {
+      AppLogger.info("Success add task to remote db");
     }
     Constants.setRevision(jsonDecode(response.body)["revision"]);
   }
@@ -51,6 +54,8 @@ class TasksRuntimeDao implements TasksDao {
       if (response.statusCode == 400) {
         throw FormatException('NotValidRevision: $revision');
       }
+    } else {
+      AppLogger.info("Success delete task from remote db");
     }
     Constants.setRevision(jsonDecode(response.body)["revision"]);
   }
@@ -73,6 +78,8 @@ class TasksRuntimeDao implements TasksDao {
       if (response.statusCode == 400) {
         throw FormatException('NotValidRevision: $revision');
       }
+    } else {
+      AppLogger.info("Success edit task in remote db");
     }
     Constants.setRevision(jsonDecode(response.body)["revision"]);
   }
@@ -113,6 +120,8 @@ class TasksRuntimeDao implements TasksDao {
       if (response.statusCode == 400) {
         throw FormatException('NotValidRevision: $revision');
       }
+    } else {
+      AppLogger.info("Success upddate tasks");
     }
     TasksDto tasks = TasksDto.fromJson(jsonDecode(response.body));
     Constants.setRevision(tasks.revision);

@@ -41,7 +41,7 @@ class TaskRuntimeDao implements TaskDao {
         taskDto.toJson(),
         conflictAlgorithm: ConflictAlgorithm.replace,
       );
-      AppLogger.info("Success add action to db");
+      AppLogger.info("Success add task to local db");
     } catch (err) {
       AppLogger.error(err.toString());
     }
@@ -60,7 +60,7 @@ class TaskRuntimeDao implements TaskDao {
           taskDto.id,
         ],
       );
-      AppLogger.info("Success delete action from db");
+      AppLogger.info("Success delete task from local db");
     } catch (err) {
       AppLogger.error(err.toString());
     }
@@ -80,7 +80,7 @@ class TaskRuntimeDao implements TaskDao {
           taskDto.id,
         ],
       );
-      AppLogger.info("Success edit action to db");
+      AppLogger.info("Success edit task in local db");
     } catch (err) {
       AppLogger.error(err.toString());
     }

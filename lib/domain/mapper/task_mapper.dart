@@ -6,7 +6,7 @@ class TaskMapper {
   TaskDto mapTaskToTaskDto(Task task) => TaskDto(
         task.id,
         task.text,
-        mapImportanceToString(task.importance),
+        importanceToString(task.importance),
         task.isDone,
         task.deadlineON ? task.deadline?.millisecondsSinceEpoch : null,
         task.color,
@@ -18,7 +18,7 @@ class TaskMapper {
   Task mapTaskDtoToTask(TaskDto taskDto) => Task(
         taskDto.id,
         taskDto.text,
-        mapStringToImportance(taskDto.importance),
+        stringToImportance(taskDto.importance),
         taskDto.done,
         (taskDto.deadline == null) ? false : true,
         (taskDto.deadline == null)
@@ -30,7 +30,7 @@ class TaskMapper {
         taskDto.lastUpdatedBy,
       );
 
-  Importance mapStringToImportance(String importance) {
+  Importance stringToImportance(String importance) {
     switch (importance) {
       case "basic":
         return Importance.basic;
@@ -42,7 +42,7 @@ class TaskMapper {
     return Importance.basic;
   }
 
-  String mapImportanceToString(Importance importance) {
+  String importanceToString(Importance importance) {
     switch (importance) {
       case Importance.basic:
         return "basic";
