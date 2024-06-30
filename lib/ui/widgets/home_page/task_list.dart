@@ -38,29 +38,36 @@ class _TaskListState extends State<TaskList> {
           const SizedBox(
             height: 8,
           ),
-          for (int index = 0; index < widget.tasks.length; index++)
-            TaskCard(
-              task: widget.tasks[index],
-              onDelete: (task) {
-                setState(() {
-                  widget.delete!(task);
-                  AppLogger.debug(task.id);
-                });
-              },
-              onEdit: (task) {
+          ListView.builder(
+            itemCount: widget.tasks.length,
+            shrinkWrap: true,
+            itemBuilder: (BuildContext context, int index) {
+              return TaskCard(
+                task: widget.tasks[index],
+                onDelete: (task) {
+                  setState(() {
+                    widget.delete!(task);
+                    AppLogger.debug(task.id);
+                  });
+                },
+                onEdit: (task) {
+                  setState(() {
+                    widget.add(task);
+                    AppLogger.debug(task.id);
+                  });
+                },
+                isVisible: widget.isVisible,
+              );
+            },
+          ),
+          SingleChildScrollView(
+            child: NewTaskCard(
+              onAdd: (task) {
                 setState(() {
                   widget.add(task);
-                  AppLogger.debug(task.id);
                 });
               },
-              isVisible: widget.isVisible,
             ),
-          NewTaskCard(
-            onAdd: (task) {
-              setState(() {
-                widget.add(task);
-              });
-            },
           ),
           const SizedBox(
             height: 8,

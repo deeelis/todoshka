@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class TaskTextField extends StatelessWidget {
   TaskTextField({super.key, this.text, required this.onChanged});
@@ -28,9 +29,9 @@ class TaskTextField extends StatelessWidget {
           minLines: 4,
           maxLines: null,
           onChanged: onChanged,
-          decoration: const InputDecoration(
+          decoration: InputDecoration(
             contentPadding: EdgeInsets.zero,
-            hintText: "Что надо сделать...",
+            hintText: AppLocalizations.of(context)?.hint,
             border: InputBorder.none,
           ),
         ),

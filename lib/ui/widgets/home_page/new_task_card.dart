@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../../domain/models/importance.dart';
 import '../../../domain/models/task.dart';
@@ -31,10 +32,10 @@ class NewTaskCard extends StatelessWidget {
       textInputAction: TextInputAction.done,
       onEditingComplete: onEditingComplete,
       style: textTheme.bodyMedium,
-      decoration: const InputDecoration(
+      decoration: InputDecoration(
         contentPadding:
             EdgeInsets.only(top: 14, bottom: 14, left: 52, right: 16),
-        hintText: 'Новое',
+        hintText: AppLocalizations.of(context)?.newTask,
         border: InputBorder.none,
       ),
     );

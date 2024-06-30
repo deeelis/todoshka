@@ -21,7 +21,6 @@ class HomePage extends ConsumerStatefulWidget {
 class HomePageState extends ConsumerState<HomePage> {
   static const collapsedBarHeight = 60.0;
   static const expandedBarHeight = 400.0;
-  late List<Task> tasks;
 
   @override
   void initState() {
@@ -60,16 +59,16 @@ class HomePageState extends ConsumerState<HomePage> {
               children: [
                 TaskList(
                   key: const Key('taskList'),
-                  tasks: tasks,
+                  tasks: items,
                   isVisible: isVisible,
                   add: (task) {
                     setState(() {
-                      ref.read(taskStateProvider.notifier).addOrEditAction(task);
+                      ref.read(taskStateProvider.notifier).addOrEditTask(task);
                     });
                   },
                   delete: (task) {
                     setState(() {
-                      ref.read(taskStateProvider.notifier).deleteAction(task);
+                      ref.read(taskStateProvider.notifier).deleteTask(task);
                     });
                   },
 
@@ -92,12 +91,12 @@ class HomePageState extends ConsumerState<HomePage> {
                 task: null,
                 onSave: (task) {
                   setState(() {
-                    ref.read(taskStateProvider.notifier).addOrEditAction(task);
+                    ref.read(taskStateProvider.notifier).addOrEditTask(task);
                   });
                 },
                 onDelete: (task) {
                   setState(() {
-                    ref.read(taskStateProvider.notifier).deleteAction(task);
+                    ref.read(taskStateProvider.notifier).deleteTask(task);
                   });
                 },
               ),

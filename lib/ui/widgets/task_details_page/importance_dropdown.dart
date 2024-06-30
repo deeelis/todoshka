@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../../domain/models/importance.dart';
 
 class ImportanceDropdown extends StatefulWidget {
@@ -24,8 +25,8 @@ class _ImportanceDropdownState extends State<ImportanceDropdown> {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          "Важность",
+        Text(
+          AppLocalizations.of(context)!.importance,
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w400,
@@ -43,12 +44,12 @@ class _ImportanceDropdownState extends State<ImportanceDropdown> {
                 icon: const SizedBox(),
                 borderRadius: const BorderRadius.all(Radius.circular(2)),
                 elevation: 3,
-                items: const [
+                items: [
                   DropdownMenuItem<Importance>(
                     value: Importance.basic,
                     child: Text(
-                      "Нет",
-                      style: TextStyle(
+                      AppLocalizations.of(context)!.importanceBasic,
+                      style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w400,
                         color: Colors.black,
@@ -58,8 +59,8 @@ class _ImportanceDropdownState extends State<ImportanceDropdown> {
                   DropdownMenuItem<Importance>(
                     value: Importance.low,
                     child: Text(
-                      "Низкий",
-                      style: TextStyle(
+                      AppLocalizations.of(context)!.importanceLow,
+                      style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
                         color: Colors.black,
@@ -69,8 +70,8 @@ class _ImportanceDropdownState extends State<ImportanceDropdown> {
                   DropdownMenuItem<Importance>(
                     value: Importance.important,
                     child: Text(
-                      "!! Высокий",
-                      style: TextStyle(
+                      AppLocalizations.of(context)!.importanceHigh,
+                      style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
                         color: Colors.red,

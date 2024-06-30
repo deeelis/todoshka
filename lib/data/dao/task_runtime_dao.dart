@@ -33,7 +33,7 @@ class TaskRuntimeDao implements TaskDao {
   }
 
   @override
-  Future<void> addAction(TaskDto taskDto) async {
+  Future<void> addTask(TaskDto taskDto) async {
     final Database db = await initializeDB();
     try {
       final _ = await db.insert(
@@ -48,7 +48,7 @@ class TaskRuntimeDao implements TaskDao {
   }
 
   @override
-  Future<void> deleteAction(TaskDto taskDto) async {
+  Future<void> deleteTask(TaskDto taskDto) async {
     final Database db = await initializeDB();
     try {
       await db.delete(
@@ -67,7 +67,7 @@ class TaskRuntimeDao implements TaskDao {
   }
 
   @override
-  Future<void> editAction(TaskDto taskDto) async {
+  Future<void> editTask(TaskDto taskDto) async {
     final Database db = await initializeDB();
     try {
       await db.update(

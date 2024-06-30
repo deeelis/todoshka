@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class TaskDeadline extends StatefulWidget {
   const TaskDeadline({
@@ -48,9 +49,9 @@ class _TaskDeadlineState extends State<TaskDeadline> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text(
-                  'Сделать до',
-                  style: TextStyle(
+                Text(
+                  AppLocalizations.of(context)!.doUntil,
+                  style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w400,
                   ),
@@ -59,7 +60,7 @@ class _TaskDeadlineState extends State<TaskDeadline> {
                   Text(
                     value != null
                         ? DateFormat('dd.MM.yyyy').format(value!)
-                        : 'Не задано',
+                        : '',
                     style: textTheme.bodyMedium!.copyWith(
                       color: value != null
                           ? Colors.blue

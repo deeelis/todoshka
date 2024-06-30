@@ -14,9 +14,10 @@ class TasksRuntimeDao implements TasksDao {
   TasksRuntimeDao();
 
   @override
-  Future<void> addAction(TaskDto actionDto) async {
+  Future<void> addTask(TaskDto actionDto) async {
     final url = Uri.parse(Constants.baseUrlList);
     int revision = await Constants.getRevision();
+    AppLogger.debug("Revision add $revision");
     ApiResultDto apiResultDto = ApiResultDto(actionDto);
     final response = await http.post(
       url,
@@ -36,9 +37,10 @@ class TasksRuntimeDao implements TasksDao {
   }
 
   @override
-  Future<void> deleteAction(TaskDto actionDto) async {
+  Future<void> deleteTask(TaskDto actionDto) async {
     final url = Uri.parse('${Constants.baseUrlList}/${actionDto.id}');
     int revision = await Constants.getRevision();
+    AppLogger.debug("Revision delete $revision");
     final response = await http.delete(
       url,
       headers: {
@@ -56,9 +58,10 @@ class TasksRuntimeDao implements TasksDao {
   }
 
   @override
-  Future<void> editAction(TaskDto actionDto) async {
+  Future<void> editTask(TaskDto actionDto) async {
     final url = Uri.parse('${Constants.baseUrlList}/${actionDto.id}');
     int revision = await Constants.getRevision();
+    AppLogger.debug("Revision edit $revision");
     ApiResultDto apiResultDto = ApiResultDto(actionDto);
     final response = await http.put(
       url,
@@ -80,6 +83,8 @@ class TasksRuntimeDao implements TasksDao {
   @override
   Future<List<TaskDto>> getList() async {
     final url = Uri.parse(Constants.baseUrlList);
+    int revision = await getRevision();
+    AppLogger.debug("Revision get $revision");
     final response = await http.get(
       url,
       headers: {
@@ -91,6 +96,7 @@ class TasksRuntimeDao implements TasksDao {
     }
     TasksDto tasks = TasksDto.fromJson(jsonDecode(response.body));
     Constants.setRevision(tasks.revision);
+    AppLogger.debug(Constants.getRevision() as String);
     return tasks.list;
   }
 
@@ -98,6 +104,7 @@ class TasksRuntimeDao implements TasksDao {
   Future<List<TaskDto>> updateTasks(List<TaskDto> list) async {
     final url = Uri.parse(Constants.baseUrlList);
     int revision = await Constants.getRevision();
+    AppLogger.debug("Revision update $revision");
     final response = await http.patch(
       url,
       headers: {
@@ -130,6 +137,8 @@ class TasksRuntimeDao implements TasksDao {
       AppLogger.debug(response.statusCode.toString());
     }
     TasksDto tasks = TasksDto.fromJson(jsonDecode(response.body));
+    Constants.setRevision(tasks.revision);
+    AppLogger.info(tasks.revision.toString());
     return tasks.revision;
   }
 }

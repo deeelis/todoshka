@@ -13,39 +13,39 @@ class TaskState extends _$TaskState {
     return list;
   }
 
-  Future<void> addOrEditAction(Task action) async {
+  Future<void> addOrEditTask(Task task) async {
     List<Task> list;
 
-    if (action.id.isEmpty) {
-      await ref.read(taskRepositoryProvider).addAction(action);
+    if (task.id.isEmpty) {
+      await ref.read(taskRepositoryProvider).addTask(task);
       list = await ref.read(taskRepositoryProvider).getAll();
     } else {
-      await ref.read(taskRepositoryProvider).editAction(action);
+      await ref.read(taskRepositoryProvider).editTask(task);
       list = await ref.read(taskRepositoryProvider).getAll();
     }
     state = AsyncValue.data(list);
   }
 
-  Future<void> deleteAction(Task action) async {
-    if (action.id.isNotEmpty) {
-      await ref.read(taskRepositoryProvider).deleteAction(action);
+  Future<void> deleteTask(Task task) async {
+    if (task.id.isNotEmpty) {
+      await ref.read(taskRepositoryProvider).deleteTask(task);
       List<Task> list = await ref.read(taskRepositoryProvider).getAll();
       AppLogger.debug(list.toString());
       state = AsyncValue.data(list);
     }
   }
 
-  Future<void> getAllActions() async {
+  Future<void> getAllTasks() async {
     List<Task> list = await ref.read(taskRepositoryProvider).getAll();
     state = AsyncValue.data(list);
   }
 
-  Future<void> markDoneOrNot(Task action, bool done) async {
-    action.isDone = done;
-    addOrEditAction(action);
+  Future<void> markDoneOrNot(Task task, bool done) async {
+    task.isDone = done;
+    addOrEditTask(task);
   }
 
-  int countDoneActions() {
+  int countDoneTasks() {
     List<Task> list = state.valueOrNull ?? [];
     int count = list.where((item) => item.isDone).length;
     return count;

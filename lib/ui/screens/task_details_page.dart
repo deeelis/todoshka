@@ -5,6 +5,7 @@ import '../../domain/models/task.dart';
 import '../widgets/task_details_page/importance_dropdown.dart';
 import '../widgets/task_details_page/task_deadline.dart';
 import '../widgets/task_details_page/task_text_filed.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class TaskDetailsPage extends StatefulWidget {
   const TaskDetailsPage({
@@ -57,9 +58,9 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
               style: TextButton.styleFrom(
                 padding: const EdgeInsets.symmetric(horizontal: 8),
               ),
-              child: const Text(
-                "СОХРАНИТЬ",
-                style: TextStyle(
+              child: Text(
+                AppLocalizations.of(context)!.save,
+                style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                   color: Colors.blue,
@@ -111,7 +112,7 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
                   color: Colors.grey.withOpacity(0.5),
                 ),
                 label: Text(
-                  'Удалить',
+                    AppLocalizations.of(context)!.delete,
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w400,
