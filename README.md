@@ -34,8 +34,8 @@
 Чтобы запустить приложение:
 
 ```bash
-  git clone https://gitlab.com/deeelis/todoshka.git
-  cd homework-flutter-2024
+  git clone https://github.com/deeelis/todoshka.git
+  cd todoshka
   Flutter flutter pub get
   flutter run
 ```
