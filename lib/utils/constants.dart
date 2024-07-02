@@ -5,6 +5,7 @@ class Constants {
   static const String baseUrlList = "https://hive.mrdekk.ru/todo/list";
   static const String token = "Indis";
   static const String headerRevision = "X-Last-Known-Revision";
+
   static Future<bool> setRevision(int revision) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.setInt('revision', revision);

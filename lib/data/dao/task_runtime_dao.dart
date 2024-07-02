@@ -33,7 +33,7 @@ class TaskRuntimeDao implements TaskDao {
   }
 
   @override
-  Future<void> addAction(TaskDto taskDto) async {
+  Future<void> addTask(TaskDto taskDto) async {
     final Database db = await initializeDB();
     try {
       final _ = await db.insert(
@@ -41,14 +41,14 @@ class TaskRuntimeDao implements TaskDao {
         taskDto.toJson(),
         conflictAlgorithm: ConflictAlgorithm.replace,
       );
-      AppLogger.info("Success add action to db");
+      AppLogger.info("Success add task to local db");
     } catch (err) {
       AppLogger.error(err.toString());
     }
   }
 
   @override
-  Future<void> deleteAction(TaskDto taskDto) async {
+  Future<void> deleteTask(TaskDto taskDto) async {
     final Database db = await initializeDB();
     try {
       await db.delete(
@@ -60,14 +60,14 @@ class TaskRuntimeDao implements TaskDao {
           taskDto.id,
         ],
       );
-      AppLogger.info("Success delete action from db");
+      AppLogger.info("Success delete task from local db");
     } catch (err) {
       AppLogger.error(err.toString());
     }
   }
 
   @override
-  Future<void> editAction(TaskDto taskDto) async {
+  Future<void> editTask(TaskDto taskDto) async {
     final Database db = await initializeDB();
     try {
       await db.update(
@@ -80,7 +80,7 @@ class TaskRuntimeDao implements TaskDao {
           taskDto.id,
         ],
       );
-      AppLogger.info("Success edit action to db");
+      AppLogger.info("Success edit task in local db");
     } catch (err) {
       AppLogger.error(err.toString());
     }

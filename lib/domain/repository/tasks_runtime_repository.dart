@@ -12,16 +12,16 @@ import '../models/task.dart';
 
 class TasksRuntimeRepository implements TasksRepository {
   final Uuid uuid;
-  final TaskDao actionsDao;
+  final TaskDao taskDao;
   final TasksDao listDao;
-  final TaskMapper actionMapper;
+  final TaskMapper taskMapper;
 
   TasksRuntimeRepository(
-      this.uuid,
-      this.actionsDao,
-      this.listDao,
-      this.actionMapper,
-      );
+    this.uuid,
+    this.taskDao,
+    this.listDao,
+    this.taskMapper,
+  );
 
   Future<String?> getId() async {
     var deviceInfo = DeviceInfoPlugin();
@@ -39,17 +39,17 @@ class TasksRuntimeRepository implements TasksRepository {
   }
 
   @override
-  Future<void> addAction(Task action) async {
-    if (action.id.isEmpty) {
-      action.id = uuid.v1();
+  Future<void> addTask(Task task) async {
+    if (task.id.isEmpty) {
+      task.id = uuid.v1();
     }
-    action
+    task
       ..createdAt = DateTime.now()
       ..lastUpdatedBy = await getId() ?? "";
-    TaskDto actionDto = actionMapper.mapTaskToTaskDto(action);
-    await actionsDao.addAction(actionDto);
+    TaskDto taskDto = taskMapper.mapTaskToTaskDto(task);
+    await taskDao.addTask(taskDto);
     try {
-      await listDao.addAction(actionDto);
+      await listDao.addTask(taskDto);
     } catch (e) {
       AppLogger.error(e.toString());
       synchronizeList();
@@ -57,11 +57,11 @@ class TasksRuntimeRepository implements TasksRepository {
   }
 
   @override
-  Future<void> deleteAction(Task action) async {
-    TaskDto actionDto = actionMapper.mapTaskToTaskDto(action);
-    await actionsDao.deleteAction(actionDto);
+  Future<void> deleteTask(Task task) async {
+    TaskDto taskDto = taskMapper.mapTaskToTaskDto(task);
+    await taskDao.deleteTask(taskDto);
     try {
-      await listDao.deleteAction(actionDto);
+      await listDao.deleteTask(taskDto);
     } catch (e) {
       AppLogger.error(e.toString());
       synchronizeList();
@@ -69,14 +69,14 @@ class TasksRuntimeRepository implements TasksRepository {
   }
 
   @override
-  Future<void> editAction(Task action) async {
-    action
+  Future<void> editTask(Task task) async {
+    task
       ..changedAt = DateTime.now()
       ..lastUpdatedBy = await getId() ?? "";
-    TaskDto actionDto = actionMapper.mapTaskToTaskDto(action);
-    await actionsDao.editAction(actionDto);
+    TaskDto taskDto = taskMapper.mapTaskToTaskDto(task);
+    await taskDao.editTask(taskDto);
     try {
-      await listDao.editAction(actionDto);
+      await listDao.editTask(taskDto);
     } catch (e) {
       AppLogger.error(e.toString());
       synchronizeList();
@@ -91,17 +91,15 @@ class TasksRuntimeRepository implements TasksRepository {
 
   @override
   Future<List<Task>> synchronizeList() async {
-    List<TaskDto> listDb = await actionsDao.getAll();
+    List<TaskDto> listDb = await taskDao.getAll();
     try {
       List<TaskDto> listFromServer = await listDao.getList();
       listDb.addAll(listFromServer);
       listFromServer = await listDao.updateTasks(listDb.toSet().toList());
-      return listFromServer
-          .map((e) => actionMapper.mapTaskDtoToTask(e))
-          .toList();
+      return listFromServer.map((e) => taskMapper.mapTaskDtoToTask(e)).toList();
     } on Exception catch (e) {
       AppLogger.error(e.toString());
     }
-    return listDb.map((e) => actionMapper.mapTaskDtoToTask(e)).toList();
+    return listDb.map((e) => taskMapper.mapTaskDtoToTask(e)).toList();
   }
 }

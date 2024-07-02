@@ -14,16 +14,18 @@ class Task {
   DateTime changedAt;
   String lastUpdatedBy;
 
-  Task(this.id,
-      this.text,
-      this.importance,
-      this.isDone,
-      this.deadlineON,
-      this.deadline,
-      this.color,
-      this.createdAt,
-      this.changedAt,
-      this.lastUpdatedBy,);
+  Task(
+    this.id,
+    this.text,
+    this.importance,
+    this.isDone,
+    this.deadlineON,
+    this.deadline,
+    this.color,
+    this.createdAt,
+    this.changedAt,
+    this.lastUpdatedBy,
+  );
 
   // for the future
   //
@@ -36,7 +38,7 @@ class Task {
     String? text,
     Importance? importance,
     bool? isDone,
-    bool? deadlineOn,
+    bool? deadlineON,
     DateTime? deadline,
     Color? color,
     bool? deleteDeadline,
@@ -54,7 +56,6 @@ class Task {
       lastUpdatedBy,
     );
   }
-
 }
 
 Task getEmpty() {

@@ -13,7 +13,7 @@ class TaskCheckbox extends StatefulWidget {
 
   final Task task;
   final bool isDone;
-  final void Function(bool) onChanged;
+  final void Function() onChanged;
   @override
   State<TaskCheckbox> createState() => _TaskCheckboxState();
 }
@@ -23,7 +23,7 @@ class _TaskCheckboxState extends State<TaskCheckbox> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        widget.onChanged(!widget.isDone);
+        widget.onChanged();
       },
       child: Container(
         height: 48,
@@ -37,11 +37,12 @@ class _TaskCheckboxState extends State<TaskCheckbox> {
                   : Colors.transparent,
           child: Checkbox(
             side: BorderSide(
-                color: !widget.isDone &&
-                        widget.task.importance == Importance.important
-                    ? Colors.red
-                    : Colors.grey,
-                width: 2),
+              color: !widget.isDone &&
+                      widget.task.importance == Importance.important
+                  ? Colors.red
+                  : Colors.grey,
+              width: 2,
+            ),
             value: widget.isDone,
             activeColor: Colors.green,
             fillColor:
@@ -49,7 +50,7 @@ class _TaskCheckboxState extends State<TaskCheckbox> {
                     ? MaterialStateProperty.all(Colors.red.withOpacity(0.16))
                     : null,
             onChanged: (_) {
-              widget.onChanged(!widget.isDone);
+              widget.onChanged();
             },
           ),
         ),
