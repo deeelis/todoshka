@@ -1,10 +1,10 @@
 import 'dart:io';
-import 'package:todoshka/data/dao/tasks_dao.dart';
+import 'package:todoshka/data/dao/tasks_remote_dao.dart';
 import 'package:todoshka/domain/repository/tasks_repository.dart';
 import 'package:uuid/uuid.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 
-import '../../data/dao/task_dao.dart';
+import '../../data/dao/tasks_local_dao.dart';
 import '../../data/dto/task_dto.dart';
 import '../../utils/logger.dart';
 import '../mapper/task_mapper.dart';
@@ -12,14 +12,14 @@ import '../models/task.dart';
 
 class TasksRuntimeRepository implements TasksRepository {
   final Uuid uuid;
-  final TaskDao taskDao;
-  final TasksDao listDao;
+  final TasksLocalDao tasksLocalDao;
+  final TasksRemoteDao tasksRemoteDao;
   final TaskMapper taskMapper;
 
   TasksRuntimeRepository(
     this.uuid,
-    this.taskDao,
-    this.listDao,
+    this.tasksLocalDao,
+    this.tasksRemoteDao,
     this.taskMapper,
   );
 
@@ -47,9 +47,9 @@ class TasksRuntimeRepository implements TasksRepository {
       ..createdAt = DateTime.now()
       ..lastUpdatedBy = await getId() ?? "";
     TaskDto taskDto = taskMapper.mapTaskToTaskDto(task);
-    await taskDao.addTask(taskDto);
+    await tasksLocalDao.addTask(taskDto);
     try {
-      await listDao.addTask(taskDto);
+      await tasksRemoteDao.addTask(taskDto);
     } catch (e) {
       AppLogger.error(e.toString());
       synchronizeList();
@@ -59,9 +59,9 @@ class TasksRuntimeRepository implements TasksRepository {
   @override
   Future<void> deleteTask(Task task) async {
     TaskDto taskDto = taskMapper.mapTaskToTaskDto(task);
-    await taskDao.deleteTask(taskDto);
+    await tasksLocalDao.deleteTask(taskDto);
     try {
-      await listDao.deleteTask(taskDto);
+      await tasksRemoteDao.deleteTask(taskDto);
     } catch (e) {
       AppLogger.error(e.toString());
       synchronizeList();
@@ -74,9 +74,9 @@ class TasksRuntimeRepository implements TasksRepository {
       ..changedAt = DateTime.now()
       ..lastUpdatedBy = await getId() ?? "";
     TaskDto taskDto = taskMapper.mapTaskToTaskDto(task);
-    await taskDao.editTask(taskDto);
+    await tasksLocalDao.editTask(taskDto);
     try {
-      await listDao.editTask(taskDto);
+      await tasksRemoteDao.editTask(taskDto);
     } catch (e) {
       AppLogger.error(e.toString());
       synchronizeList();
@@ -91,11 +91,12 @@ class TasksRuntimeRepository implements TasksRepository {
 
   @override
   Future<List<Task>> synchronizeList() async {
-    List<TaskDto> listDb = await taskDao.getAll();
+    AppLogger.debug("synchro");
+    List<TaskDto> listDb = await tasksLocalDao.getAll();
     try {
-      List<TaskDto> listFromServer = await listDao.getList();
+      List<TaskDto> listFromServer = await tasksRemoteDao.getList();
       listDb.addAll(listFromServer);
-      listFromServer = await listDao.updateTasks(listDb.toSet().toList());
+      listFromServer = await tasksRemoteDao.updateTasks(listDb.toSet().toList());
       return listFromServer.map((e) => taskMapper.mapTaskDtoToTask(e)).toList();
     } on Exception catch (e) {
       AppLogger.error(e.toString());

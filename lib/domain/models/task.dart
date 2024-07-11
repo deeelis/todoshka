@@ -27,13 +27,6 @@ class Task {
     this.lastUpdatedBy,
   );
 
-  // for the future
-  //
-  // factory Task.fromJson(Map<String, dynamic> json) =>
-  //     _$TaskFromJson(json);
-  //
-  // Map<String, dynamic> toJson() => _$TaskToJson(this);
-
   Task editAndCopyWith({
     String? text,
     Importance? importance,
