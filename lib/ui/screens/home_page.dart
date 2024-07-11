@@ -3,10 +3,12 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:todoshka/ui/screens/task_details_page.dart';
-import 'package:todoshka/utils/tasks.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../domain/models/task.dart';
-import '../widgets/home_page/task_list.dart';
+import '../providers/task_provider.dart';
+import '../widgets/home_page/new_task_card.dart';
+import '../widgets/home_page/task_card.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({
@@ -20,46 +22,69 @@ class HomePage extends ConsumerStatefulWidget {
 class HomePageState extends ConsumerState<HomePage> {
   static const collapsedBarHeight = 60.0;
   static const expandedBarHeight = 400.0;
-  late List<Task> tasks;
+  final scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
-    tasks = mockTasks;
   }
 
   bool isVisible = false;
 
   @override
   Widget build(BuildContext context) {
+    List<Task> items = ref.watch(taskStateProvider).valueOrNull ?? [];
     return Scaffold(
       body: CustomScrollView(
+        controller: scrollController,
         physics: const BouncingScrollPhysics(),
         slivers: [
           SliverPersistentHeader(
             floating: true,
             pinned: true,
             delegate: _AppHeader(
-                completedTaskCount: 5,
-                isVisible: isVisible ? true : false,
-                onChangeVisibility: () {
-                  setState(() {
-                    isVisible = !isVisible;
-                  });
-                }),
+              completedTaskCount:
+                  ref.read(taskStateProvider.notifier).countDoneTasks(),
+              isVisible: isVisible ? true : false,
+              onChangeVisibility: () {
+                setState(() {
+                  isVisible = !isVisible;
+                });
+              },
+            ),
           ),
           SliverToBoxAdapter(
-            child: Column(
-              children: [
-                TaskList(
-                  key: const Key('taskList'),
-                  tasks: tasks,
-                  isVisible: isVisible,
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-              ],
+            child: Card(
+              color: Theme.of(context).cardColor,
+              elevation: 2,
+              margin: const EdgeInsets.only(right: 16, left: 16),
+              child: Column(
+                children: [
+                  const SizedBox(
+                    height: 8,
+                  ),
+                  ListView.builder(
+                    itemCount: items.length,
+                    controller: scrollController,
+                    shrinkWrap: true,
+                    itemBuilder: (BuildContext context, int index) {
+                      if ((isVisible && items[index].isDone)) {
+                        return const SizedBox();
+                      }
+                      return TaskCard(
+                        task: items[index],
+                        isVisible: isVisible,
+                      );
+                    },
+                  ),
+                  SingleChildScrollView(
+                    child: NewTaskCard(),
+                  ),
+                  const SizedBox(
+                    height: 8,
+                  ),
+                ],
+              ),
             ),
           ),
         ],
@@ -71,17 +96,7 @@ class HomePageState extends ConsumerState<HomePage> {
             context,
             MaterialPageRoute(
               builder: (context) => TaskDetailsPage(
-                task: null,
-                onSave: (task) {
-                  setState(() {
-                    tasks.add(task);
-                  });
-                },
-                onDelete: (task) {
-                  setState(() {
-                    tasks.add(task);
-                  });
-                },
+                task: getEmpty(),
               ),
             ),
           );
@@ -121,7 +136,6 @@ class _AppHeader extends SliverPersistentHeaderDelegate {
     final progress = offset / (maxExtent - minExtent);
 
     return Material(
-      color: Colors.transparent,
       elevation: progress < 1 ? expandedElevation : collapsedElevation,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 100),
@@ -151,7 +165,7 @@ class _AppHeader extends SliverPersistentHeaderDelegate {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      "Мои дела",
+                      AppLocalizations.of(context)!.myTasks,
                       style: TextStyle.lerp(
                         Theme.of(context).textTheme.headlineSmall,
                         Theme.of(context).textTheme.titleLarge,
@@ -166,7 +180,7 @@ class _AppHeader extends SliverPersistentHeaderDelegate {
                           duration: const Duration(milliseconds: 200),
                           opacity: progress < 0.2 ? 1 : 0,
                           child: Text(
-                            'Выполнено — $completedTaskCount',
+                            '${AppLocalizations.of(context)!.completed} - $completedTaskCount',
                             style:
                                 Theme.of(context).textTheme.bodyLarge!.copyWith(
                                       color: Colors.grey,
@@ -174,7 +188,7 @@ class _AppHeader extends SliverPersistentHeaderDelegate {
                           ),
                         ),
                       ),
-                    )
+                    ),
                   ],
                 ),
               ),
