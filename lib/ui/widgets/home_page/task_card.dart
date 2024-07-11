@@ -4,6 +4,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
 import 'package:todoshka/ui/providers/task_provider.dart';
 import 'package:todoshka/ui/widgets/home_page/task_checkbox.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../../domain/models/importance.dart';
 import '../../../domain/models/task.dart';
@@ -151,7 +152,7 @@ class _TaskCardState extends ConsumerState<TaskCard> {
                     Padding(
                       padding: const EdgeInsets.only(top: 4),
                       child: Text(
-                        DateFormat('dd.MM.yyyy').format(widget.task.deadline!),
+                        DateFormat('dd MMMM yyyy', AppLocalizations.of(context)?.locale).format(widget.task.deadline!),
                         style: const TextStyle(
                           color: Colors.grey,
                           fontSize: 12,

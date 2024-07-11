@@ -77,7 +77,7 @@ class _TaskDetailsPageState extends ConsumerState<TaskDetailsPage> {
       ),
       body: Padding(
         padding: const EdgeInsets.only(left: 16, right: 16, top: 8),
-        child: Column(
+        child: ListView(
           children: [
             TaskTextField(
               text: widget.task.text,
@@ -172,7 +172,7 @@ class _TaskDetailsPageState extends ConsumerState<TaskDetailsPage> {
                       context: context,
                       initialDate: DateTime.now(),
                       firstDate: DateTime.now(),
-                      lastDate: DateTime(2100),
+                      lastDate:  DateTime.now().add(const Duration(days: 365 * 1000)),
                     );
                     if (date != null) {
                       setState(() {
@@ -197,7 +197,7 @@ class _TaskDetailsPageState extends ConsumerState<TaskDetailsPage> {
                         if (widget.task.deadlineON)
                           Text(
                             widget.task.deadlineON
-                                ? DateFormat('dd.MM.yyyy')
+                                ? DateFormat('dd MMMM yyyy', AppLocalizations.of(context)?.locale)
                                     .format(widget.task.deadline!)
                                 : '',
                             style: Theme.of(context)

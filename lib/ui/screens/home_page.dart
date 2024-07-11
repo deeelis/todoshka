@@ -136,6 +136,7 @@ class _AppHeader extends SliverPersistentHeaderDelegate {
     final progress = offset / (maxExtent - minExtent);
 
     return Material(
+      color: Theme.of(context).scaffoldBackgroundColor,
       elevation: progress < 1 ? expandedElevation : collapsedElevation,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 100),

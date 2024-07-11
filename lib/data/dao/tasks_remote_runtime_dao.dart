@@ -8,10 +8,10 @@ import 'package:todoshka/data/dto/element_dto.dart';
 import '../../utils/constants.dart';
 import '../../utils/logger.dart';
 import '../dto/task_dto.dart';
-import 'tasks_dao.dart';
+import 'tasks_remote_dao.dart';
 
-class TasksRuntimeDao implements TasksDao {
-  TasksRuntimeDao();
+class TasksRemoteRuntimeDao implements TasksRemoteDao {
+  TasksRemoteRuntimeDao();
 
   @override
   Future<void> addTask(TaskDto taskDto) async {

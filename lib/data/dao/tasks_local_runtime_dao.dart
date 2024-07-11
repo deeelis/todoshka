@@ -3,10 +3,38 @@ import 'package:sqflite/sqflite.dart';
 import 'package:todoshka/data/dto/task_dto.dart';
 import 'package:todoshka/utils/logger.dart';
 
-import 'task_dao.dart';
+import 'tasks_local_dao.dart';
 
-class TaskRuntimeDao implements TaskDao {
-  TaskRuntimeDao();
+class TasksLocalRuntimeDao implements TasksLocalDao {
+  TasksLocalRuntimeDao();
+
+  static const String tableName = "Tasks";
+  late final Database _db;
+
+
+  Future<void> init() async {
+    String path = await getDatabasesPath();
+    _db = await openDatabase(
+      join(path, 'database.db'),
+      onCreate: (database, version) async {
+        await database.execute(
+          """CREATE TABLE IF NOT EXIST $tableName (
+            id TEXT PRIMARY KEY ,
+            text TEXT NOT NULL ,
+            done TEXT NOT NULL ,
+            deadline INTEGER ,
+            importance TEXT NOT NULL ,
+            color TEXT NOT NULL ,
+            created_at INTEGER NOT NULL ,
+            changed_at INTEGER NOT NULL ,
+            last_updated_by TEXT NOT NULL
+            )
+            """,
+        );
+      },
+      version: 1,
+    );
+  }
 
   Future<Database> initializeDB() async {
     String path = await getDatabasesPath();
@@ -41,7 +69,7 @@ class TaskRuntimeDao implements TaskDao {
         taskDto.toJson(),
         conflictAlgorithm: ConflictAlgorithm.replace,
       );
-      AppLogger.info("Success add task to local db");
+      AppLogger.info("Successfully add task to local db");
     } catch (err) {
       AppLogger.error(err.toString());
     }
@@ -60,7 +88,7 @@ class TaskRuntimeDao implements TaskDao {
           taskDto.id,
         ],
       );
-      AppLogger.info("Success delete task from local db");
+      AppLogger.info("Successfully delete task from local db");
     } catch (err) {
       AppLogger.error(err.toString());
     }
@@ -80,7 +108,7 @@ class TaskRuntimeDao implements TaskDao {
           taskDto.id,
         ],
       );
-      AppLogger.info("Success edit task in local db");
+      AppLogger.info("Successfully edit task in local db");
     } catch (err) {
       AppLogger.error(err.toString());
     }
@@ -90,8 +118,8 @@ class TaskRuntimeDao implements TaskDao {
   Future<List<TaskDto>> getAll() async {
     final Database db = await initializeDB();
     final List<Map<String, Object?>> queryResult = await db.query('Tasks');
-    return queryResult.map((e) {
-      TaskDto taskDto = TaskDto.fromJson(e);
+    return queryResult.map((elem) {
+      TaskDto taskDto = TaskDto.fromJson(elem);
       return taskDto;
     }).toList();
   }

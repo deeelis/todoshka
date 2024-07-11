@@ -30,7 +30,6 @@ class TaskState extends _$TaskState {
     if (task.id.isNotEmpty) {
       await ref.read(taskRepositoryProvider).deleteTask(task);
       List<Task> list = await ref.read(taskRepositoryProvider).getAll();
-      AppLogger.debug(list.toString());
       state = AsyncValue.data(list);
     }
   }
