@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
 import 'package:todoshka/data/dto/tasks_dto.dart';
 import 'package:todoshka/data/dto/element_dto.dart';
 
@@ -12,6 +14,39 @@ import 'tasks_remote_dao.dart';
 
 class TasksRemoteRuntimeDao implements TasksRemoteDao {
   TasksRemoteRuntimeDao();
+
+  void processException(Response response, int revision) {
+    AppLogger.debug(response.statusCode.toString());
+    switch (response.statusCode) {
+      case 400:
+        {
+          AppLogger.error(response.body.toString());
+          throw FormatException("NotValidRevision: $revision");
+        }
+      case 401:
+        {
+          AppLogger.error(response.body.toString());
+          throw const FormatException("NotValidAuth");
+        }
+      case 404:
+        {
+          AppLogger.error(response.body.toString());
+          throw const FormatException("NotExistAction");
+        }
+      case 500:
+        {
+          AppLogger.error(response.body.toString());
+          throw FormatException("ServerError: ${response.body.toString()}");
+        }
+      default:
+        {
+          if (response.statusCode >= 300) {
+            AppLogger.error("Status code:${response.statusCode}");
+            throw Exception();
+          }
+        }
+    }
+  }
 
   @override
   Future<void> addTask(TaskDto taskDto) async {
@@ -27,12 +62,7 @@ class TasksRemoteRuntimeDao implements TasksRemoteDao {
       body: json.encode(elementDto.toJson()),
     );
     if (response.statusCode != 200) {
-      AppLogger.debug(response.statusCode.toString());
-      if (response.statusCode == 400) {
-        throw FormatException("NotValidRevision: $revision");
-      } else {
-        throw FormatException("NotOKResponseStatusCode: ${response.statusCode}");
-      }
+      processException(response, revision);
     } else {
       AppLogger.info("Success add task to remote db");
     }
@@ -52,12 +82,7 @@ class TasksRemoteRuntimeDao implements TasksRemoteDao {
       },
     );
     if (response.statusCode != 200) {
-      AppLogger.debug(response.statusCode.toString());
-      if (response.statusCode == 400) {
-        throw FormatException('NotValidRevision: $revision');
-      } else {
-        throw FormatException("NotOKResponseStatusCode: ${response.statusCode}");
-      }
+      processException(response, revision);
     } else {
       AppLogger.info("Success delete task from remote db");
     }
@@ -78,12 +103,7 @@ class TasksRemoteRuntimeDao implements TasksRemoteDao {
       body: json.encode(elementDto.toJson()),
     );
     if (response.statusCode != 200) {
-      AppLogger.debug(response.statusCode.toString());
-      if (response.statusCode == 400) {
-        throw FormatException('NotValidRevision: $revision');
-      } else {
-        throw FormatException("NotOKResponseStatusCode: ${response.statusCode}");
-      }
+      processException(response, revision);
     } else {
       AppLogger.info("Success edit task in remote db");
     }
@@ -100,8 +120,8 @@ class TasksRemoteRuntimeDao implements TasksRemoteDao {
       },
     );
     if (response.statusCode != 200) {
-      AppLogger.debug(response.statusCode.toString());
-      throw FormatException("NotOKResponseStatusCode: ${response.statusCode}");
+      int revision = await Constants.getRevision();
+      processException(response, revision);
     }
     TasksDto tasks = TasksDto.fromJson(jsonDecode(response.body));
     Constants.setRevision(tasks.revision);
@@ -123,12 +143,7 @@ class TasksRemoteRuntimeDao implements TasksRemoteDao {
       body: '{"list":${json.encode(list.map((e) => e.toJson()).toList())}}',
     );
     if (response.statusCode != 200) {
-      AppLogger.debug(response.statusCode.toString());
-      if (response.statusCode == 400) {
-        throw FormatException('NotValidRevision: $revision');
-      } else {
-        throw FormatException("NotOKResponseStatusCode: ${response.statusCode}");
-      }
+      processException(response, revision);
     } else {
       AppLogger.info("Success upddate tasks");
     }
@@ -146,8 +161,8 @@ class TasksRemoteRuntimeDao implements TasksRemoteDao {
       },
     );
     if (response.statusCode != 200) {
-      AppLogger.debug(response.statusCode.toString());
-      throw FormatException("NotOKResponseStatusCode: ${response.statusCode}");
+      int revision = await Constants.getRevision();
+      processException(response, revision);
     }
     TasksDto tasks = TasksDto.fromJson(jsonDecode(response.body));
     Constants.setRevision(tasks.revision);
