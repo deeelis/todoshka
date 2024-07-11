@@ -24,6 +24,7 @@ class TaskTextField extends StatelessWidget {
         ],
       ),
       child: Padding(
+        key: const Key("text_field"),
         padding: const EdgeInsets.all(16),
         child: TextField(
           controller: controller,

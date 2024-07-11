@@ -23,17 +23,33 @@ String mapStringToImportance(Importance importance) {
 class TaskDetailsPage extends ConsumerStatefulWidget {
   const TaskDetailsPage({
     super.key,
-    required this.task,
+    this.id,
   });
 
-  final Task task;
+  final String? id;
   @override
   ConsumerState<TaskDetailsPage> createState() => _TaskDetailsPageState();
 }
 
 class _TaskDetailsPageState extends ConsumerState<TaskDetailsPage> {
+  late Task task;
+  late bool first;
+  @override
+  void initState() {
+    first = true;
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
+    List<Task> list = ref.watch(taskStateProvider).value ?? [];
+    if (first) {
+      task = list.firstWhere(
+        (item) => item.id == widget.id,
+        orElse: () => getEmpty(),
+      );
+      first = false;
+    }
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -55,9 +71,10 @@ class _TaskDetailsPageState extends ConsumerState<TaskDetailsPage> {
           Padding(
             padding: const EdgeInsets.only(right: 8),
             child: TextButton(
+              key: const Key("save_button"),
               onPressed: () {
                 AppLogger.debug("task saved");
-                ref.read(taskStateProvider.notifier).addOrEditTask(widget.task);
+                ref.read(taskStateProvider.notifier).addOrEditTask(task);
                 Navigator.pop(context);
               },
               style: TextButton.styleFrom(
@@ -80,9 +97,9 @@ class _TaskDetailsPageState extends ConsumerState<TaskDetailsPage> {
         child: ListView(
           children: [
             TaskTextField(
-              text: widget.task.text,
+              text: task.text,
               onChanged: (text) {
-                widget.task.text = text;
+                task.text = text;
               },
             ),
             const SizedBox(
@@ -107,7 +124,7 @@ class _TaskDetailsPageState extends ConsumerState<TaskDetailsPage> {
                     child: ButtonTheme(
                       child: DropdownButtonHideUnderline(
                         child: DropdownButton<Importance>(
-                          value: widget.task.importance,
+                          value: task.importance,
                           icon: const SizedBox(),
                           borderRadius:
                               const BorderRadius.all(Radius.circular(2)),
@@ -151,7 +168,7 @@ class _TaskDetailsPageState extends ConsumerState<TaskDetailsPage> {
                             if (value != null) {
                               setState(() {
                                 AppLogger.info(mapStringToImportance(value));
-                                widget.task.importance = value;
+                                task.importance = value;
                               });
                             }
                           },
@@ -172,12 +189,14 @@ class _TaskDetailsPageState extends ConsumerState<TaskDetailsPage> {
                       context: context,
                       initialDate: DateTime.now(),
                       firstDate: DateTime.now(),
-                      lastDate:  DateTime.now().add(const Duration(days: 365 * 1000)),
+                      lastDate:
+                          DateTime.now().add(const Duration(days: 365 * 1000)),
                     );
                     if (date != null) {
                       setState(() {
-                        widget.task.deadline = date;
-                        widget.task.deadlineON = true;
+                        task
+                          ..deadline = date
+                          ..deadlineON = true;
                       });
                     }
                   },
@@ -194,17 +213,19 @@ class _TaskDetailsPageState extends ConsumerState<TaskDetailsPage> {
                             fontWeight: FontWeight.w400,
                           ),
                         ),
-                        if (widget.task.deadlineON)
+                        if (task.deadlineON)
                           Text(
-                            widget.task.deadlineON
-                                ? DateFormat('dd MMMM yyyy', AppLocalizations.of(context)?.locale)
-                                    .format(widget.task.deadline!)
+                            task.deadlineON
+                                ? DateFormat(
+                                    'dd MMMM yyyy',
+                                    AppLocalizations.of(context)?.locale,
+                                  ).format(task.deadline!)
                                 : '',
                             style: Theme.of(context)
                                 .textTheme
                                 .bodyMedium!
                                 .copyWith(
-                                  color: widget.task.deadlineON
+                                  color: task.deadlineON
                                       ? Colors.blue
                                       : Theme.of(context)
                                           .textTheme
@@ -218,10 +239,10 @@ class _TaskDetailsPageState extends ConsumerState<TaskDetailsPage> {
                 ),
                 const Spacer(),
                 Switch(
-                  value: widget.task.deadlineON,
+                  value: task.deadlineON,
                   onChanged: (value) {
                     setState(() {
-                      widget.task.deadlineON = !widget.task.deadlineON;
+                      task.deadlineON = !task.deadlineON;
                     });
                   },
                 ),
@@ -233,21 +254,23 @@ class _TaskDetailsPageState extends ConsumerState<TaskDetailsPage> {
               child: TextButton.icon(
                 icon: Icon(
                   Icons.delete,
-                  color: Colors.grey.withOpacity(0.5),
+                  color: task.id.isNotEmpty
+                      ? Colors.red
+                      : Colors.grey.withOpacity(0.5),
                 ),
                 label: Text(
                   AppLocalizations.of(context)!.delete,
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w400,
-                    color: Colors.grey.withOpacity(0.5),
+                    color: task.id.isNotEmpty
+                        ? Colors.red
+                        : Colors.grey.withOpacity(0.5),
                   ),
                 ),
-                onPressed: widget.task.id.isNotEmpty
+                onPressed: task.id.isNotEmpty
                     ? () {
-                        ref
-                            .read(taskStateProvider.notifier)
-                            .deleteTask(widget.task);
+                        ref.read(taskStateProvider.notifier).deleteTask(task);
                         Navigator.pop(context);
                       }
                     : null,
