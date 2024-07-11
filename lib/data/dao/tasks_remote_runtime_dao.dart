@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'package:todoshka/data/dto/tasks_dto.dart';
@@ -132,12 +131,10 @@ class TasksRemoteRuntimeDao implements TasksRemoteDao {
   Future<List<TaskDto>> updateTasks(List<TaskDto> list) async {
     final url = Uri.parse(Constants.baseUrlList);
     int revision = await Constants.getRevision();
-    AppLogger.debug("Revision update $revision");
-    String r = revision.toString();
     final response = await http.patch(
       url,
       headers: {
-        Constants.headerRevision: r,
+        Constants.headerRevision: revision.toString(),
         HttpHeaders.authorizationHeader: "Bearer ${Constants.token}",
       },
       body: '{"list":${json.encode(list.map((e) => e.toJson()).toList())}}',

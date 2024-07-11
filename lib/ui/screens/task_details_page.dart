@@ -45,7 +45,7 @@ class _TaskDetailsPageState extends ConsumerState<TaskDetailsPage> {
     List<Task> list = ref.watch(taskStateProvider).value ?? [];
     if (first) {
       task = list.firstWhere(
-            (item) => item.id == widget.id,
+        (item) => item.id == widget.id,
         orElse: () => getEmpty(),
       );
       first = false;
@@ -189,12 +189,14 @@ class _TaskDetailsPageState extends ConsumerState<TaskDetailsPage> {
                       context: context,
                       initialDate: DateTime.now(),
                       firstDate: DateTime.now(),
-                      lastDate:  DateTime.now().add(const Duration(days: 365 * 1000)),
+                      lastDate:
+                          DateTime.now().add(const Duration(days: 365 * 1000)),
                     );
                     if (date != null) {
                       setState(() {
-                        task..deadline = date
-                        ..deadlineON = true;
+                        task
+                          ..deadline = date
+                          ..deadlineON = true;
                       });
                     }
                   },
@@ -214,8 +216,10 @@ class _TaskDetailsPageState extends ConsumerState<TaskDetailsPage> {
                         if (task.deadlineON)
                           Text(
                             task.deadlineON
-                                ? DateFormat('dd MMMM yyyy', AppLocalizations.of(context)?.locale)
-                                    .format(task.deadline!)
+                                ? DateFormat(
+                                    'dd MMMM yyyy',
+                                    AppLocalizations.of(context)?.locale,
+                                  ).format(task.deadline!)
                                 : '',
                             style: Theme.of(context)
                                 .textTheme
@@ -250,21 +254,23 @@ class _TaskDetailsPageState extends ConsumerState<TaskDetailsPage> {
               child: TextButton.icon(
                 icon: Icon(
                   Icons.delete,
-                  color: task.id.isNotEmpty? Colors.red : Colors.grey.withOpacity(0.5),
+                  color: task.id.isNotEmpty
+                      ? Colors.red
+                      : Colors.grey.withOpacity(0.5),
                 ),
                 label: Text(
                   AppLocalizations.of(context)!.delete,
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w400,
-                    color: Colors.grey.withOpacity(0.5),
+                    color: task.id.isNotEmpty
+                        ? Colors.red
+                        : Colors.grey.withOpacity(0.5),
                   ),
                 ),
                 onPressed: task.id.isNotEmpty
                     ? () {
-                        ref
-                            .read(taskStateProvider.notifier)
-                            .deleteTask(task);
+                        ref.read(taskStateProvider.notifier).deleteTask(task);
                         Navigator.pop(context);
                       }
                     : null,

@@ -1,10 +1,13 @@
+import 'dart:async';
 import 'dart:math';
 
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:todoshka/ui/screens/task_details_page.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:todoshka/utils/logger.dart';
 
 import '../../domain/models/task.dart';
 import '../providers/task_provider.dart';
@@ -24,9 +27,45 @@ class HomePageState extends ConsumerState<HomePage> {
   static const collapsedBarHeight = 60.0;
   static const expandedBarHeight = 400.0;
   final scrollController = ScrollController();
+  List<ConnectivityResult> _connectionStatus = [ConnectivityResult.none];
+  final Connectivity _connectivity = Connectivity();
+  late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
+
+  Future<void> initConnectivity() async {
+    late List<ConnectivityResult> result;
+    try {
+      result = await _connectivity.checkConnectivity();
+    } on PlatformException catch (e) {
+      AppLogger.error(e.toString());
+      return;
+    }
+    if (!mounted) {
+      return Future.value(null);
+    }
+    return _updateConnectionStatus(result);
+  }
+
+  Future<void> _updateConnectionStatus(List<ConnectivityResult> result) async {
+    if (_connectionStatus[0] == ConnectivityResult.none &&
+        result[0] != ConnectivityResult.none) {
+      await ref.read(taskStateProvider.notifier).synchronize();
+    }
+    setState(() {
+      _connectionStatus = result;
+    });
+  }
+
+  @override
+  dispose() {
+    _connectivitySubscription.cancel();
+    super.dispose();
+  }
 
   @override
   void initState() {
+    initConnectivity();
+    _connectivitySubscription =
+        _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
     super.initState();
   }
 
@@ -46,6 +85,9 @@ class HomePageState extends ConsumerState<HomePage> {
             delegate: _AppHeader(
               completedTaskCount:
                   ref.read(taskStateProvider.notifier).countDoneTasks(),
+              isConnected: _connectionStatus[0] == ConnectivityResult.none
+                  ? true
+                  : false,
               isVisible: isVisible ? true : false,
               onChangeVisibility: () {
                 setState(() {
@@ -108,10 +150,12 @@ class _AppHeader extends SliverPersistentHeaderDelegate {
     required this.completedTaskCount,
     required this.isVisible,
     required this.onChangeVisibility,
+    required this.isConnected,
   });
 
   final int completedTaskCount;
   bool isVisible;
+  bool isConnected;
   final Function() onChangeVisibility;
 
   final double expandedElevation = 0;
@@ -158,13 +202,25 @@ class _AppHeader extends SliverPersistentHeaderDelegate {
                   mainAxisAlignment: MainAxisAlignment.end,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(
-                      AppLocalizations.of(context)!.myTasks,
-                      style: TextStyle.lerp(
-                        Theme.of(context).textTheme.headlineSmall,
-                        Theme.of(context).textTheme.titleLarge,
-                        progress,
-                      ),
+                    Row(
+                      children: [
+                        isConnected
+                            ? const Icon(Icons.wifi_off)
+                            : const SizedBox(),
+                        isConnected
+                            ? const SizedBox(
+                                width: 10,
+                              )
+                            : const SizedBox(),
+                        Text(
+                          AppLocalizations.of(context)!.myTasks,
+                          style: TextStyle.lerp(
+                            Theme.of(context).textTheme.headlineSmall,
+                            Theme.of(context).textTheme.titleLarge,
+                            progress,
+                          ),
+                        ),
+                      ],
                     ),
                     SizedBox(
                       height: (28 * (1 - progress)),

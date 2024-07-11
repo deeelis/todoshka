@@ -4,7 +4,6 @@ import 'package:todoshka/data/repository/tasks_repository.dart';
 import 'package:todoshka/domain/mapper/task_mapper.dart';
 import 'package:todoshka/domain/models/task.dart';
 import 'package:uuid/uuid.dart';
-import 'package:device_info_plus/device_info_plus.dart';
 
 import '../../data/dao/tasks_local_dao.dart';
 import '../../data/dto/task_dto.dart';
@@ -23,33 +22,17 @@ class TasksRuntimeRepository implements TasksRepository {
     this.taskMapper,
   );
 
-  Future<String?> getId() async {
-    var deviceInfo = DeviceInfoPlugin();
-    if (Platform.isIOS) {
-      var iosDeviceInfo = await deviceInfo.iosInfo;
-      return iosDeviceInfo.identifierForVendor;
-    } else if (Platform.isAndroid) {
-      var androidDeviceInfo = await deviceInfo.androidInfo;
-      return androidDeviceInfo.id;
-    } else if (Platform.isWindows) {
-      var windowsDeviceInfo = await deviceInfo.windowsInfo;
-      return windowsDeviceInfo.deviceId;
-    }
-    return null;
-  }
-
   @override
   Future<void> addTask(Task task) async {
     if (task.id.isEmpty) {
       task.id = uuid.v1();
     }
-    task
-      ..createdAt = DateTime.now()
-      ..lastUpdatedBy = await getId() ?? "";
     TaskDto taskDto = taskMapper.mapTaskToTaskDto(task);
     await tasksLocalDao.addTask(taskDto);
     try {
       await tasksRemoteDao.addTask(taskDto);
+    } on SocketException {
+      AppLogger.info("NoConnection");
     } catch (e) {
       AppLogger.error(e.toString());
       synchronizeList();
@@ -62,6 +45,8 @@ class TasksRuntimeRepository implements TasksRepository {
     await tasksLocalDao.deleteTask(taskDto);
     try {
       await tasksRemoteDao.deleteTask(taskDto);
+    } on SocketException {
+      AppLogger.info("No Connection");
     } catch (e) {
       AppLogger.error(e.toString());
       synchronizeList();
@@ -70,13 +55,12 @@ class TasksRuntimeRepository implements TasksRepository {
 
   @override
   Future<void> editTask(Task task) async {
-    task
-      ..changedAt = DateTime.now()
-      ..lastUpdatedBy = await getId() ?? "";
     TaskDto taskDto = taskMapper.mapTaskToTaskDto(task);
     await tasksLocalDao.editTask(taskDto);
     try {
       await tasksRemoteDao.editTask(taskDto);
+    } on SocketException {
+      AppLogger.info("No Connection");
     } catch (e) {
       AppLogger.error(e.toString());
       synchronizeList();
@@ -91,13 +75,17 @@ class TasksRuntimeRepository implements TasksRepository {
 
   @override
   Future<List<Task>> synchronizeList() async {
-    AppLogger.debug("synchro");
+    AppLogger.debug("synchronize");
     List<TaskDto> listDb = await tasksLocalDao.getAll();
     try {
       List<TaskDto> listFromServer = await tasksRemoteDao.getList();
       listDb.addAll(listFromServer);
-      listFromServer = await tasksRemoteDao.updateTasks(listDb.toSet().toList());
+      listFromServer =
+          await tasksRemoteDao.updateTasks(listDb.toSet().toList());
+      await tasksLocalDao.updateTasks(listFromServer);
       return listFromServer.map((e) => taskMapper.mapTaskDtoToTask(e)).toList();
+    } on SocketException {
+      AppLogger.info("No Connection");
     } on Exception catch (e) {
       AppLogger.error(e.toString());
     }

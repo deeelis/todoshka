@@ -9,32 +9,6 @@ class TasksLocalRuntimeDao implements TasksLocalDao {
   TasksLocalRuntimeDao();
 
   static const String tableName = "Tasks";
-  late final Database _db;
-
-
-  Future<void> init() async {
-    String path = await getDatabasesPath();
-    _db = await openDatabase(
-      join(path, 'database.db'),
-      onCreate: (database, version) async {
-        await database.execute(
-          """CREATE TABLE IF NOT EXIST $tableName (
-            id TEXT PRIMARY KEY ,
-            text TEXT NOT NULL ,
-            done TEXT NOT NULL ,
-            deadline INTEGER ,
-            importance TEXT NOT NULL ,
-            color TEXT NOT NULL ,
-            created_at INTEGER NOT NULL ,
-            changed_at INTEGER NOT NULL ,
-            last_updated_by TEXT NOT NULL
-            )
-            """,
-        );
-      },
-      version: 1,
-    );
-  }
 
   Future<Database> initializeDB() async {
     String path = await getDatabasesPath();
@@ -45,7 +19,7 @@ class TasksLocalRuntimeDao implements TasksLocalDao {
           """CREATE TABLE Tasks(
             id TEXT PRIMARY KEY ,
             text TEXT NOT NULL ,
-            done TEXT NOT NULL ,
+            done INTEGER NOT NULL ,
             deadline INTEGER ,
             importance TEXT NOT NULL ,
             color TEXT NOT NULL ,
@@ -63,10 +37,12 @@ class TasksLocalRuntimeDao implements TasksLocalDao {
   @override
   Future<void> addTask(TaskDto taskDto) async {
     final Database db = await initializeDB();
+    var task = taskDto.toJson();
+    task["done"] = taskDto.done ? 1 : 0;
     try {
       final _ = await db.insert(
         'Tasks',
-        taskDto.toJson(),
+        task,
         conflictAlgorithm: ConflictAlgorithm.replace,
       );
       AppLogger.info("Successfully add task to local db");
@@ -97,10 +73,12 @@ class TasksLocalRuntimeDao implements TasksLocalDao {
   @override
   Future<void> editTask(TaskDto taskDto) async {
     final Database db = await initializeDB();
+    var task = taskDto.toJson();
+    task["done"] = taskDto.done ? 1 : 0;
     try {
       await db.update(
         "Tasks",
-        taskDto.toJson(),
+        task,
         where: """
       id = ?
       """,
@@ -122,5 +100,27 @@ class TasksLocalRuntimeDao implements TasksLocalDao {
       TaskDto taskDto = TaskDto.fromJson(elem);
       return taskDto;
     }).toList();
+  }
+
+  @override
+  Future<List<TaskDto>> updateTasks(List<TaskDto> list) async {
+    final Database db = await initializeDB();
+    try {
+      await db.rawDelete("DELETE FROM Tasks");
+      for (TaskDto taskDto in list) {
+        var task = taskDto.toJson();
+        task["done"] = taskDto.done ? 1 : 0;
+        await db.insert(
+          'Tasks',
+          task,
+          conflictAlgorithm: ConflictAlgorithm.replace,
+        );
+      }
+      AppLogger.info("Successfully updated tasks in local db");
+      return getAll();
+    } catch (err) {
+      AppLogger.error(err.toString());
+      return [];
+    }
   }
 }

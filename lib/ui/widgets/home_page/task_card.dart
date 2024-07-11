@@ -10,7 +10,6 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../../domain/models/importance.dart';
 import '../../../domain/models/task.dart';
 import '../../../utils/logger.dart';
-import '../../screens/task_details_page.dart';
 
 class TaskCard extends ConsumerStatefulWidget {
   const TaskCard({
@@ -144,7 +143,10 @@ class _TaskCardState extends ConsumerState<TaskCard> {
                     Padding(
                       padding: const EdgeInsets.only(top: 4),
                       child: Text(
-                        DateFormat('dd MMMM yyyy', AppLocalizations.of(context)?.locale).format(widget.task.deadline!),
+                        DateFormat(
+                          'dd MMMM yyyy',
+                          AppLocalizations.of(context)?.locale,
+                        ).format(widget.task.deadline!),
                         style: const TextStyle(
                           color: Colors.grey,
                           fontSize: 12,
