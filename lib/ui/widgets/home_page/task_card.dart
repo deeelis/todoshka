@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:todoshka/ui/providers/task_provider.dart';
 import 'package:todoshka/ui/widgets/home_page/task_checkbox.dart';
@@ -62,14 +63,7 @@ class _TaskCardState extends ConsumerState<TaskCard> {
 
   void toDetailsPage() {
     AppLogger.debug("pushed to detailed page");
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => TaskDetailsPage(
-          task: widget.task,
-        ),
-      ),
-    );
+    context.push("/edit/${widget.task.id}");
   }
 
   @override
@@ -79,8 +73,6 @@ class _TaskCardState extends ConsumerState<TaskCard> {
       child: Dismissible(
         key: UniqueKey(),
         dismissThresholds: const {DismissDirection.startToEnd: 0.3},
-        // resizeDuration: const Duration(milliseconds: 500),
-        // movementDuration: const Duration(milliseconds: 300),
         onUpdate: onUpdate,
         onDismissed: onDismissed,
         confirmDismiss: confirmDismiss,

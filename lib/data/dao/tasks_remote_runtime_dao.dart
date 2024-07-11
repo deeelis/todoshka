@@ -30,6 +30,8 @@ class TasksRemoteRuntimeDao implements TasksRemoteDao {
       AppLogger.debug(response.statusCode.toString());
       if (response.statusCode == 400) {
         throw FormatException("NotValidRevision: $revision");
+      } else {
+        throw FormatException("NotOKResponseStatusCode: ${response.statusCode}");
       }
     } else {
       AppLogger.info("Success add task to remote db");
@@ -53,6 +55,8 @@ class TasksRemoteRuntimeDao implements TasksRemoteDao {
       AppLogger.debug(response.statusCode.toString());
       if (response.statusCode == 400) {
         throw FormatException('NotValidRevision: $revision');
+      } else {
+        throw FormatException("NotOKResponseStatusCode: ${response.statusCode}");
       }
     } else {
       AppLogger.info("Success delete task from remote db");
@@ -77,6 +81,8 @@ class TasksRemoteRuntimeDao implements TasksRemoteDao {
       AppLogger.debug(response.statusCode.toString());
       if (response.statusCode == 400) {
         throw FormatException('NotValidRevision: $revision');
+      } else {
+        throw FormatException("NotOKResponseStatusCode: ${response.statusCode}");
       }
     } else {
       AppLogger.info("Success edit task in remote db");
@@ -95,6 +101,7 @@ class TasksRemoteRuntimeDao implements TasksRemoteDao {
     );
     if (response.statusCode != 200) {
       AppLogger.debug(response.statusCode.toString());
+      throw FormatException("NotOKResponseStatusCode: ${response.statusCode}");
     }
     TasksDto tasks = TasksDto.fromJson(jsonDecode(response.body));
     Constants.setRevision(tasks.revision);
@@ -119,6 +126,8 @@ class TasksRemoteRuntimeDao implements TasksRemoteDao {
       AppLogger.debug(response.statusCode.toString());
       if (response.statusCode == 400) {
         throw FormatException('NotValidRevision: $revision');
+      } else {
+        throw FormatException("NotOKResponseStatusCode: ${response.statusCode}");
       }
     } else {
       AppLogger.info("Success upddate tasks");
@@ -138,6 +147,7 @@ class TasksRemoteRuntimeDao implements TasksRemoteDao {
     );
     if (response.statusCode != 200) {
       AppLogger.debug(response.statusCode.toString());
+      throw FormatException("NotOKResponseStatusCode: ${response.statusCode}");
     }
     TasksDto tasks = TasksDto.fromJson(jsonDecode(response.body));
     Constants.setRevision(tasks.revision);

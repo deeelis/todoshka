@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:todoshka/ui/screens/task_details_page.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -90,17 +91,9 @@ class HomePageState extends ConsumerState<HomePage> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
+        key: const Key("add_task_floating_button"),
         shape: const CircleBorder(),
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => TaskDetailsPage(
-                task: getEmpty(),
-              ),
-            ),
-          );
-        },
+        onPressed: () => context.push("/add"),
         child: const Icon(
           Icons.add,
           size: 35,

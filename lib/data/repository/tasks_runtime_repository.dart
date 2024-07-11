@@ -1,14 +1,14 @@
 import 'dart:io';
 import 'package:todoshka/data/dao/tasks_remote_dao.dart';
-import 'package:todoshka/domain/repository/tasks_repository.dart';
+import 'package:todoshka/data/repository/tasks_repository.dart';
+import 'package:todoshka/domain/mapper/task_mapper.dart';
+import 'package:todoshka/domain/models/task.dart';
 import 'package:uuid/uuid.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 
 import '../../data/dao/tasks_local_dao.dart';
 import '../../data/dto/task_dto.dart';
 import '../../utils/logger.dart';
-import '../mapper/task_mapper.dart';
-import '../models/task.dart';
 
 class TasksRuntimeRepository implements TasksRepository {
   final Uuid uuid;
