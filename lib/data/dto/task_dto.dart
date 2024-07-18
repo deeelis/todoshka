@@ -27,9 +27,6 @@ class TaskDto {
     if (done is String) {
       return done == "1";
     }
-    if (done is int) {
-      return done == 1;
-    }
     if (done is bool) {
       return done;
     }

@@ -1,9 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:todoshka/core/router.dart';
 import 'package:todoshka/themes/dark_theme.dart';
 import 'package:todoshka/themes/light_theme.dart';
-import 'package:todoshka/ui/screens/home_page.dart';
 import 'package:todoshka/utils/logger.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -26,8 +26,7 @@ class ToDoApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return MaterialApp(
-      home: const HomePage(),
+    return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       localizationsDelegates: const [
         AppLocalizations.delegate, // Add this line
@@ -42,6 +41,7 @@ class ToDoApp extends ConsumerWidget {
       theme: lightTheme(),
       darkTheme: darkTheme(),
       themeMode: ThemeMode.light,
+      routerConfig: AppRouter.goRouter,
     );
   }
 }

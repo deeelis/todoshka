@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:todoshka/ui/providers/task_provider.dart';
 import 'package:todoshka/ui/widgets/home_page/task_checkbox.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../../domain/models/importance.dart';
 import '../../../domain/models/task.dart';
 import '../../../utils/logger.dart';
-import '../../screens/task_details_page.dart';
 
 class TaskCard extends ConsumerStatefulWidget {
   const TaskCard({
@@ -61,14 +62,7 @@ class _TaskCardState extends ConsumerState<TaskCard> {
 
   void toDetailsPage() {
     AppLogger.debug("pushed to detailed page");
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => TaskDetailsPage(
-          task: widget.task,
-        ),
-      ),
-    );
+    context.push("/edit/${widget.task.id}");
   }
 
   @override
@@ -78,8 +72,6 @@ class _TaskCardState extends ConsumerState<TaskCard> {
       child: Dismissible(
         key: UniqueKey(),
         dismissThresholds: const {DismissDirection.startToEnd: 0.3},
-        // resizeDuration: const Duration(milliseconds: 500),
-        // movementDuration: const Duration(milliseconds: 300),
         onUpdate: onUpdate,
         onDismissed: onDismissed,
         confirmDismiss: confirmDismiss,
@@ -151,7 +143,10 @@ class _TaskCardState extends ConsumerState<TaskCard> {
                     Padding(
                       padding: const EdgeInsets.only(top: 4),
                       child: Text(
-                        DateFormat('dd.MM.yyyy').format(widget.task.deadline!),
+                        DateFormat(
+                          'dd MMMM yyyy',
+                          AppLocalizations.of(context)?.locale,
+                        ).format(widget.task.deadline!),
                         style: const TextStyle(
                           color: Colors.grey,
                           fontSize: 12,
