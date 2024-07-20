@@ -45,10 +45,10 @@ class _TaskCheckboxState extends State<TaskCheckbox> {
             ),
             value: widget.isDone,
             activeColor: Colors.green,
-            fillColor:
-                !widget.isDone && widget.task.importance == Importance.important
-                    ? MaterialStateProperty.all(Colors.red.withOpacity(0.16))
-                    : null,
+            // fillColor:
+            //     !widget.isDone && widget.task.importance == Importance.important
+            //         ? MaterialStateProperty.all(Colors.red.withOpacity(0.16))
+            //         : null,
             onChanged: (_) {
               widget.onChanged();
             },
