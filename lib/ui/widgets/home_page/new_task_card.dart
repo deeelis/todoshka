@@ -1,3 +1,5 @@
+import 'package:confetti/confetti.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -9,9 +11,11 @@ import '../../../domain/models/task.dart';
 class NewTaskCard extends ConsumerWidget {
   NewTaskCard({
     super.key,
+    required this.controllerAdd,
   });
   final TextEditingController controller = TextEditingController();
   final FocusNode focusNode = FocusNode();
+  final ConfettiController controllerAdd;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -23,6 +27,13 @@ class NewTaskCard extends ConsumerWidget {
           ..importance = Importance.basic
           ..isDone = false;
         ref.read(taskStateProvider.notifier).addOrEditTask(task);
+        controllerAdd.play();
+        FirebaseAnalytics.instance.logEvent(
+          name: 'add',
+          parameters: {
+            'taskId': task.id,
+          },
+        );
       }
     }
 

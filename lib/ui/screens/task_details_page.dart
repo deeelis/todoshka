@@ -1,5 +1,7 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:todoshka/ui/providers/task_provider.dart';
 import 'package:todoshka/utils/logger.dart';
@@ -60,7 +62,14 @@ class _TaskDetailsPageState extends ConsumerState<TaskDetailsPage> {
           width: 14,
           child: IconButton(
             onPressed: () {
-              Navigator.pop(context);
+              FirebaseAnalytics.instance.logEvent(
+                name: 'pop',
+                parameters: {
+                  'pageFrom': 'detailsPage',
+                  'pageTo': 'home',
+                },
+              );
+              context.pop();
             },
             icon: const Icon(
               Icons.close,
@@ -75,7 +84,20 @@ class _TaskDetailsPageState extends ConsumerState<TaskDetailsPage> {
               onPressed: () {
                 AppLogger.debug("task saved");
                 ref.read(taskStateProvider.notifier).addOrEditTask(task);
-                Navigator.pop(context);
+                FirebaseAnalytics.instance.logEvent(
+                  name: 'add',
+                  parameters: {
+                    'taskId': task.id,
+                  },
+                );
+                FirebaseAnalytics.instance.logEvent(
+                  name: 'pop',
+                  parameters: {
+                    'pageFrom': 'detailsPage',
+                    'pageTo': 'home',
+                  },
+                );
+                context.pop();
               },
               style: TextButton.styleFrom(
                 padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -116,7 +138,6 @@ class _TaskDetailsPageState extends ConsumerState<TaskDetailsPage> {
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w400,
-                      color: Colors.black,
                     ),
                   ),
                   SizedBox(
@@ -137,7 +158,6 @@ class _TaskDetailsPageState extends ConsumerState<TaskDetailsPage> {
                                 style: const TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w400,
-                                  color: Colors.black,
                                 ),
                               ),
                             ),
@@ -148,7 +168,6 @@ class _TaskDetailsPageState extends ConsumerState<TaskDetailsPage> {
                                 style: const TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w600,
-                                  color: Colors.black,
                                 ),
                               ),
                             ),
@@ -271,7 +290,20 @@ class _TaskDetailsPageState extends ConsumerState<TaskDetailsPage> {
                 onPressed: task.id.isNotEmpty
                     ? () {
                         ref.read(taskStateProvider.notifier).deleteTask(task);
-                        Navigator.pop(context);
+                        FirebaseAnalytics.instance.logEvent(
+                          name: 'delete',
+                          parameters: {
+                            'taskId': task.id,
+                          },
+                        );
+                        FirebaseAnalytics.instance.logEvent(
+                          name: 'pop',
+                          parameters: {
+                            'pageFrom': 'detailsPage',
+                            'pageTo': 'home',
+                          },
+                        );
+                        context.pop();
                       }
                     : null,
               ),
