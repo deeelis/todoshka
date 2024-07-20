@@ -59,7 +59,8 @@ class ToDoApp extends ConsumerWidget {
       ],
       theme: lightTheme(),
       darkTheme: darkTheme(),
-      themeMode: brightness == Brightness.dark? ThemeMode.dark : ThemeMode.light,
+      themeMode:
+          brightness == Brightness.dark ? ThemeMode.dark : ThemeMode.light,
       routerConfig: AppRouter.goRouter,
     );
   }

@@ -189,7 +189,7 @@ class HomePageState extends ConsumerState<HomePage> {
                   'pageTo': 'detailsPage',
                 },
               );
-  },
+            },
             child: const Icon(
               Icons.add,
               size: 35,
