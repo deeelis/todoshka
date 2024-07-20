@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "226559905267",
+    "project_id": "todoshka-cddb0",
+    "storage_bucket": "todoshka-cddb0.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:226559905267:android:68cb449fa5dd1343ed9686",
+        "android_client_info": {
+          "package_name": "com.example.todoshka"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBgtpfp8kSe16jFE2EYPoe34BXUGq5BBbg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

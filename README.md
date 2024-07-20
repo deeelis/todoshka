@@ -28,6 +28,11 @@
 - Тестирование 
 - Deeplinks
 - Поддержан offline-режим
+- Есть анимации при быстром добавлении новой задачи, удалении и пометки выполнено задачи
+- Текст длинных заметок обрезается
+- Поддержана ночная тема
+- Поддержаны лейндскейп-ориентация и больших экранов
+- Аналитика событий
 
 ## Показ работы приложения
 
@@ -41,8 +46,14 @@
 ```bash
   git clone https://gitlab.com/deeelis/todoshka.git
   cd homework-flutter-2024
-  Flutter flutter pub get
-  flutter run
+  flutter flutter pub get
+  flutter run --flavor prod
+```
+
+dev версия:
+
+```bash
+  flutter run --flavor dev
 ```
 
 Либо можете установить с помощью APK-файла, который находится в папке apk

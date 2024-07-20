@@ -1,3 +1,5 @@
+import 'package:confetti/confetti.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
@@ -15,10 +17,12 @@ class TaskCard extends ConsumerStatefulWidget {
   const TaskCard({
     required this.task,
     super.key,
-    required this.isVisible,
+    required this.controllerDone,
+    required this.controllerDelete,
   });
   final Task task;
-  final bool isVisible;
+  final ConfettiController controllerDone;
+  final ConfettiController controllerDelete;
 
   @override
   ConsumerState<TaskCard> createState() => _TaskCardState();
@@ -37,17 +41,34 @@ class _TaskCardState extends ConsumerState<TaskCard> {
   }
 
   void onDismissed(direction) {
+    widget.controllerDelete.play();
     ref.read(taskStateProvider.notifier).deleteTask(widget.task);
   }
 
   Future<bool> confirmDismiss(direction) async {
     switch (direction) {
       case DismissDirection.endToStart:
+        FirebaseAnalytics.instance.logEvent(
+          name: 'delete',
+          parameters: {
+            'taskId': widget.task.id,
+          },
+        );
+        widget.controllerDelete.play();
         return true;
 
       case DismissDirection.startToEnd:
         await Future.delayed(const Duration(milliseconds: 200));
         ref.read(taskStateProvider.notifier).markDoneOrNot(widget.task, true);
+        FirebaseAnalytics.instance.logEvent(
+          name: 'checkbox',
+          parameters: {
+            'taskId': widget.task.id,
+          },
+        );
+        if (widget.task.isDone) {
+          widget.controllerDone.play();
+        }
     }
     return false;
   }
@@ -58,17 +79,35 @@ class _TaskCardState extends ConsumerState<TaskCard> {
           .read(taskStateProvider.notifier)
           .markDoneOrNot(widget.task, !widget.task.isDone);
     });
+    if (widget.task.isDone) {
+      widget.controllerDone.play();
+    }
+    FirebaseAnalytics.instance.logEvent(
+      name: 'checkbox',
+      parameters: {
+        'taskId': widget.task.id,
+      },
+    );
   }
 
   void toDetailsPage() {
     AppLogger.debug("pushed to detailed page");
+    FirebaseAnalytics.instance.logEvent(
+      name: 'push',
+      parameters: {
+        'pageFrom': 'home',
+        'pageTo': 'detailsPage',
+      },
+    );
     context.push("/edit/${widget.task.id}");
   }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: toDetailsPage,
+      onTap: () {
+        toDetailsPage();
+      },
       child: Dismissible(
         key: UniqueKey(),
         dismissThresholds: const {DismissDirection.startToEnd: 0.3},
